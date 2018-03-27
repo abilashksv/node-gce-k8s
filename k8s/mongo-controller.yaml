@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: mongo-$BRANCH_NAME
+  name: mongo-$BRANCH_NAME-controller
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: mongo-$BRANCH_NAME
+    spec:
+      containers:
+      - image: mongo
+        name: mongo-$BRANCH_NAME
+        ports:
+        - name: mongo-$BRANCH_NAME
+          containerPort: 27017
+#          hostPort: 27017
+        volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+      volumes:
+        - name: mongo-persistent-storage
+          gcePersistentDisk:
+            pdName: mongo-disk
+            fsType: ext4

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    name: nodeapp-$BRANCH_NAME
+  name: nodeapp-$BRANCH_NAME-controller
+spec:
+  replicas: 2
+  selector:
+    name: nodeapp-$BRANCH_NAME
+  template:
+    metadata:
+      labels:
+        name: nodeapp-$BRANCH_NAME
+    spec:
+      containers:
+      - image: node:0.10.40
+        command: ['/bin/sh', '-c']
+        args: ['cd /home && git clone -b $BRANCH_NAME https://github.com/scotch-io/node-todo.git demo && cd demo/ && npm install && sed -i -- ''s/localhost/mongo-$BRANCH_NAME/g'' config/database.js && node server.js']
+        name: nodeapp-$BRANCH_NAME
+        ports:
+        - containerPort: 8080
+          name: http-server
